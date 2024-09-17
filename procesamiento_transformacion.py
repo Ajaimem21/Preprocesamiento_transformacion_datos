@@ -209,5 +209,17 @@ data['ExterQual_encoded'] = le.fit_transform(data['ExterQual'])
 # Verificar el resultado de Label Encoding
 print(data[['ExterQual', 'ExterQual_encoded']].head())
 
+
+
 # Exportar el dataset reorganizado
 data.to_csv('train_procesado.csv', index=False)
+
+
+# Analisis comparativo
+data_original = pd.read_csv('train.csv')
+data_modified = pd.read_csv('train_procesado.csv')
+
+
+print("")
+print(data_original.describe())
+print(data_modified.describe())
