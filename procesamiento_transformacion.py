@@ -54,36 +54,36 @@ print(data_faltante_df.sort_values(by='Proporción (%)', ascending=False))
 
 #Imputar los valores faltantes utilizando diferentes estrategias
 # Imputar LotFrontage con la mediana
-data['LotFrontage'].fillna(data['LotFrontage'].median())
+data['LotFrontage'].fillna(data['LotFrontage'].median(), inplace=True)
 
 # Imputar Alley como 'No Alley'
-data['Alley'].fillna('No Alley')
+data['Alley'].fillna('No Alley', inplace=True)
 
 # Imputar MasVnrType y MasVnrArea
-data['MasVnrType'].fillna('None')
-data['MasVnrArea'].fillna(0)
+data['MasVnrType'].fillna('None', inplace=True)
+data['MasVnrArea'].fillna(0, inplace=True)
 
 # Imputar características del sótano
 bsmt_columns = ['BsmtQual', 'BsmtCond', 'BsmtExposure', 'BsmtFinType1', 'BsmtFinType2']
 for col in bsmt_columns:
-    data[col].fillna('No Basement')
+    data[col].fillna('No Basement', inplace=True)
 
 # Imputar Electrical con la moda
-data['Electrical'].fillna(data['Electrical'].mode()[0])
+data['Electrical'].fillna(data['Electrical'].mode()[0], inplace=True)
 
 # Imputar FireplaceQu como 'No Fireplace'
-data['FireplaceQu'].fillna('No Fireplace')
+data['FireplaceQu'].fillna('No Fireplace', inplace=True)
 
 # Imputar características del garaje
 garage_columns = ['GarageType', 'GarageFinish', 'GarageQual', 'GarageCond']
 for col in garage_columns:
-    data[col].fillna('No Garage')
+    data[col].fillna('No Garage', inplace=True)
 data['GarageYrBlt'].fillna(0)
 
 # Imputar PoolQC, Fence y MiscFeature
-data['PoolQC'].fillna('No Pool')
-data['Fence'].fillna('No Fence')
-data['MiscFeature'].fillna('No Feature')
+data['PoolQC'].fillna('No Pool', inplace=True)
+data['Fence'].fillna('No Fence', inplace=True)
+data['MiscFeature'].fillna('No Feature', inplace=True)
 
 #:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
@@ -144,7 +144,7 @@ data_normalized[columnas_numericas] = scaler.fit_transform(data[columnas_numeric
 # Mostrar los resultados de la normalización
 print(data_normalized[columnas_numericas].head())
 
-#Tranformacion
+#Estandarización
 # Crear un objeto StandardScaler
 scaler = StandardScaler()
 
@@ -155,6 +155,28 @@ data_standardized[columnas_numericas] = scaler.fit_transform(data[columnas_numer
 # Mostrar los resultados de la estandarización
 print( data_standardized[columnas_numericas].head())
 
+#Transformación Logarítmica
+# Histograma de SalePrice antes de la transformación
+sns.histplot(data['SalePrice'], kde=True)
+plt.title('Distribución de SalePrice antes de la transformación')
+plt.show()
+
+# Calcular el sesgo de la variable SalePrice
+print("")
+print("Sesgo de SalePrice:", data['SalePrice'].skew())
+
+# Aplicar la transformación logarítmica a SalePrice
+data['LogSalePrice'] = np.log1p(data['SalePrice'])
+
+# Histograma de SalePrice después de la transformación
+sns.histplot(data['LogSalePrice'], kde=True)
+plt.title('Distribución de SalePrice después de la transformación logarítmica')
+plt.show()
+
+# Calcular el sesgo de la variable transformada
+print("")
+print("Sesgo de LogSalePrice:", data['LogSalePrice'].skew())
+
 #:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 #6. INGENIERIA DE CARACTERISTICAS
@@ -163,18 +185,21 @@ print( data_standardized[columnas_numericas].head())
 data['TotalAreaRatio'] = data['GrLivArea'] / data['LotArea']
 
 # Verificar la nueva columna
+print("")
 print(data[['TotalAreaRatio']].head())
 
 # Crear la nueva variable HouseAgeAtSale
 data['HouseAgeAtSale'] = data['YrSold'] - data['YearBuilt']
 
 # Verificar la nueva columna
+print("")
 print(data[['HouseAgeAtSale']].head())
 
 # Aplicar One-Hot Encoding a las variables categóricas seleccionadas
 data_encoded = pd.get_dummies(data, columns=['Neighborhood', 'SaleCondition'])
 
 # Verificar el resultado de One-Hot Encoding
+print("")
 print(data_encoded.head())
 
 # Aplicar Label Encoding a una variable categórica con relación ordinal
